@@ -53,7 +53,7 @@ class TestRedirect(unittest.TestCase):
 
     def test_checkRedirect(self):
         url = '%s/%s' % (self.baseurl, 'image/iiif/2/owl%2F20180608%2FIMG_0001.jp2/info.json')
-        target = 'http://iiif.gdmrdigital.com/%s' % ('image/iiif/2/owl%2F20180608%2FIMG_0001/info.json')
+        target = 'https://iiif.gdmrdigital.com/%s' % ('image/iiif/2/owl%2F20180608%2FIMG_0001/info.json')
         host = 'iiif.gdmrdigital.com'
         self.redirectCheck(url, target, host)
 
