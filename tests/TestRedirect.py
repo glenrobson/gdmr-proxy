@@ -21,7 +21,7 @@ class TestRedirect(unittest.TestCase):
         code = response.status_code
         self.assertEqual(code, 200, 'Failed to get 200 from host %s due to %s' % (host, code))
 
-    def redirectCheck(self, url, target,host=None):
+    def redirectCheck(self, url, target,host=None, statusCode=301):
         code = 0
         if host:
             response = requests.get(url, allow_redirects=False, headers={'host': host})
@@ -32,7 +32,7 @@ class TestRedirect(unittest.TestCase):
         location = url
         if 'Location' in response.headers:
             location = response.headers['Location']
-        self.assertEqual(code, 301, 'Failed to get redirected %s to %s due to %s' % (url, target, code))
+        self.assertEqual(code, statusCode, 'Failed to get redirected %s to %s due to %s' % (url, target, code))
         self.assertEqual(location, target, 'Failed to redirect to the correct place. Expected %s but got %s' % (target, location))
 
     def checkHeader(self, url, headers, host=None):
@@ -65,6 +65,24 @@ class TestRedirect(unittest.TestCase):
           }, host)
 
 
+    def test_checkCORSIA(self):
+        path = 'iiif/dsc-00720/info.json'
+        url =  '%s/%s' % (self.baseurl, path)
+        host  = 'archivelab.gdmrdigital.com'
+        self.checkHeader(url, {
+            "Access-Control-Allow-Origin": "*"
+          }, host)
+
+        target = "%s/%s" % ('https://iiif.archivelab.org', path)
+        self.redirectCheck(url, target, host, statusCode=302)
+
+    def test_checkIARedirect(self):
+        path = 'iiif/dsc-00720/full/full/0/default.jpg'
+        url =  '%s/%s' % (self.baseurl, path)
+        host  = 'archivelab.gdmrdigital.com'
+
+        target = "%s/%s" % ('https://iiif.archivelab.org', path)
+        self.redirectCheck(url, target, host, statusCode=302)
 
 if __name__ == '__main__':
     baseurl = 'http://0.0.0.0'
